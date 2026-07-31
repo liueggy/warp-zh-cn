@@ -75,12 +75,33 @@ jobs:
       - name: Build release executable
         run: cargo build --profile release-lto -p warp --bin warp-oss
         env:
+          CARGO_FULL_PROFILE: release-lto
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Windows runtime payload
+        shell: pwsh
+        run: |
+          @(
+            'target/release-lto/warp-oss.exe'
+            'target/release-lto/conpty.dll'
+            'target/release-lto/dxcompiler.dll'
+            'target/release-lto/dxil.dll'
+            'target/release-lto/x64/OpenConsole.exe'
+          ) | ForEach-Object {
+            if (-not (Test-Path -LiteralPath $_ -PathType Leaf)) {
+              throw "Missing Windows runtime file: $_"
+            }
+          }
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: warp-zh-cn-windows
-          path: target/release-lto/warp-oss.exe
+          path: |
+            target/release-lto/warp-oss.exe
+            target/release-lto/conpty.dll
+            target/release-lto/dxcompiler.dll
+            target/release-lto/dxil.dll
+            target/release-lto/x64/OpenConsole.exe
           if-no-files-found: error
           retention-days: 14
