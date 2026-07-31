@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows executable
-        uses: actions/upload-artifact@ea165f8d65b6e75b5404495a51f5c1718c771f6c # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: warp-zh-cn-windows
           path: target/release-lto/warp-oss.exe
