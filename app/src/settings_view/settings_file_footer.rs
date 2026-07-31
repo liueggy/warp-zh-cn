@@ -18,6 +18,7 @@ use warpui::elements::{
 };
 use warpui::fonts::{FamilyId, Properties, Weight};
 use warpui::platform::Cursor;
+use warpui::AppContext;
 
 use crate::WorkspaceAction;
 use crate::appearance::Appearance;
@@ -159,6 +160,7 @@ pub fn render_settings_error_alert(
     error: &SettingsFileError,
     ai_enabled: bool,
     mouse_states: &SettingsFooterMouseStates,
+    app: &AppContext,
 ) -> Box<dyn Element> {
     let theme = appearance.theme();
     // Warning banner colors: yellow background, contrast-safe text on top of
@@ -289,6 +291,7 @@ pub fn render_footer(
     error: Option<&SettingsFileError>,
     ai_enabled: bool,
     mouse_states: &SettingsFooterMouseStates,
+    app: &AppContext,
 ) -> Box<dyn Element> {
     let inner: Box<dyn Element> = match kind {
         SettingsFooterKind::Hidden => return Empty::new().finish(),
@@ -297,7 +300,9 @@ pub fn render_footer(
             mouse_states.open_settings_file_button.clone(),
         ),
         SettingsFooterKind::ErrorAlert => match error {
-            Some(error) => render_settings_error_alert(appearance, error, ai_enabled, mouse_states),
+            Some(error) => {
+                render_settings_error_alert(appearance, error, ai_enabled, mouse_states, app)
+            },
             // Defensive fallback: if the error disappears between `choose` and
             // `render_footer`, fall back to the plain button rather than
             // rendering an empty alert shell.

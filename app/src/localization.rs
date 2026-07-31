@@ -1,4 +1,5 @@
 use fluent_bundle::FluentArgs;
+use settings::Setting;
 use warp_localization::{Localization, UiLanguage};
 use warpui::{AppContext, Entity, SingletonEntity};
 
@@ -43,9 +44,10 @@ impl SingletonEntity for LocalizationModel {}
 pub fn init(ctx: &mut AppContext) {
     let language = *GeneralSettings::as_ref(ctx).language.value();
     let localization = ctx.add_singleton_model(move |_| LocalizationModel::new(language));
+    let general_settings = GeneralSettings::handle(ctx);
 
-    ctx.subscribe_to_model(&GeneralSettings::handle(ctx), move |settings, _, _, ctx| {
-        let language = *settings.as_ref(ctx).language.value();
+    ctx.subscribe_to_model(&general_settings.clone(), move |_, _, ctx| {
+        let language = *general_settings.as_ref(ctx).language.value();
         let changed = localization.read(ctx, |model, _| model.language() != language);
         if !changed {
             return;

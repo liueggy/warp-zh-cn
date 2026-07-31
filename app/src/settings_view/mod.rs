@@ -2614,6 +2614,7 @@ impl View for SettingsView {
             self.settings_file_error.as_ref(),
             AISettings::as_ref(app).is_any_ai_enabled(app),
             &self.footer_mouse_states,
+            app,
         );
 
         let scrollable = Container::new(
