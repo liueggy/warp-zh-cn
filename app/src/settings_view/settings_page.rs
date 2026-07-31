@@ -770,6 +770,13 @@ pub fn render_page_title(text: &str, size: f32, appearance: &Appearance) -> Box<
     .finish()
 }
 
+fn localized_page_title(title: &str, app: &AppContext) -> String {
+    match title {
+        "Account" => crate::localization::text("settings-account-title", app),
+        _ => title.to_owned(),
+    }
+}
+
 /// Renders a toggle with a label on the left and a toggle on the right,
 /// including bottom padding.
 pub fn render_body_item<T: Clone + Action>(
@@ -1676,7 +1683,11 @@ impl<V: warpui::View> PageType<V> {
                 {
                     if let Some(title) = title {
                         let col = Flex::column()
-                            .with_child(render_page_title(title, HEADER_FONT_SIZE, appearance))
+                            .with_child(render_page_title(
+                                &localized_page_title(title, app),
+                                HEADER_FONT_SIZE,
+                                appearance,
+                            ))
                             .with_child(widget.render_widget(view, false, appearance, app));
                         page = col.finish();
                     } else {
@@ -1693,7 +1704,11 @@ impl<V: warpui::View> PageType<V> {
             } => {
                 let mut page = Flex::column();
                 if let Some(title) = title {
-                    page.add_child(render_page_title(title, HEADER_FONT_SIZE, appearance));
+                    page.add_child(render_page_title(
+                        &localized_page_title(title, app),
+                        HEADER_FONT_SIZE,
+                        appearance,
+                    ));
                 }
                 for widget in widgets {
                     let highlighted =
@@ -1712,7 +1727,11 @@ impl<V: warpui::View> PageType<V> {
             } => {
                 let mut page = Flex::column();
                 if let Some(title) = title {
-                    page.add_child(render_page_title(title, HEADER_FONT_SIZE, appearance));
+                    page.add_child(render_page_title(
+                        &localized_page_title(title, app),
+                        HEADER_FONT_SIZE,
+                        appearance,
+                    ));
                 }
                 let num_categories = categories.len();
                 for (i, category) in categories.into_iter().enumerate() {
