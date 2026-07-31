@@ -44,22 +44,19 @@ pub fn init(ctx: &mut AppContext) {
     let language = *GeneralSettings::as_ref(ctx).language.value();
     let localization = ctx.add_singleton_model(move |_| LocalizationModel::new(language));
 
-    ctx.subscribe_to_model(
-        &GeneralSettings::handle(ctx),
-        move |settings, _, _, ctx| {
-            let language = *settings.as_ref(ctx).language.value();
-            let changed = localization.read(ctx, |model, _| model.language() != language);
-            if !changed {
-                return;
-            }
+    ctx.subscribe_to_model(&GeneralSettings::handle(ctx), move |settings, _, _, ctx| {
+        let language = *settings.as_ref(ctx).language.value();
+        let changed = localization.read(ctx, |model, _| model.language() != language);
+        if !changed {
+            return;
+        }
 
-            localization.update(ctx, |model, ctx| {
-                *model = LocalizationModel::new(language);
-                ctx.emit(LocalizationEvent::LanguageChanged);
-            });
-            ctx.invalidate_all_views();
-        },
-    );
+        localization.update(ctx, |model, ctx| {
+            *model = LocalizationModel::new(language);
+            ctx.emit(LocalizationEvent::LanguageChanged);
+        });
+        ctx.invalidate_all_views();
+    });
 }
 
 pub fn text(id: &str, ctx: &AppContext) -> String {

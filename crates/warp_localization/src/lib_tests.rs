@@ -15,7 +15,10 @@ fn resolves_unknown_or_missing_system_locales_to_english() {
     assert_eq!(resolve_system_locale(Some("fr-FR")), langid!("en-US"));
     assert_eq!(resolve_system_locale(Some("zh-TW")), langid!("en-US"));
     assert_eq!(resolve_system_locale(Some("zh-Hant")), langid!("en-US"));
-    assert_eq!(resolve_system_locale(Some("not a locale")), langid!("en-US"));
+    assert_eq!(
+        resolve_system_locale(Some("not a locale")),
+        langid!("en-US")
+    );
     assert_eq!(resolve_system_locale(None), langid!("en-US"));
 }
 
@@ -30,10 +33,7 @@ fn formats_arguments_in_both_languages() {
     args.set("name", "Warp");
 
     let english = Localization::new(UiLanguage::EnUs).unwrap();
-    assert_eq!(
-        english.text("welcome-user", Some(&args)),
-        "Welcome to Warp"
-    );
+    assert_eq!(english.text("welcome-user", Some(&args)), "Welcome to Warp");
 
     let chinese = Localization::new(UiLanguage::ZhCn).unwrap();
     assert_eq!(chinese.text("welcome-user", Some(&args)), "欢迎使用 Warp");

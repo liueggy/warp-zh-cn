@@ -126,9 +126,8 @@ fn bundle(
     locale: LanguageIdentifier,
     source: &str,
 ) -> Result<FluentBundle<FluentResource>, Vec<String>> {
-    let resource = FluentResource::try_new(source.to_owned()).map_err(|(_, errors)| {
-        errors.into_iter().map(|error| error.to_string()).collect()
-    })?;
+    let resource = FluentResource::try_new(source.to_owned())
+        .map_err(|(_, errors)| errors.into_iter().map(|error| error.to_string()).collect())?;
     let mut bundle = FluentBundle::new_concurrent(vec![locale]);
     bundle
         .add_resource(resource)
