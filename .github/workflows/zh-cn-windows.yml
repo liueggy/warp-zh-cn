@@ -31,6 +31,9 @@ jobs:
         with:
           target_os: windows
           is_self_hosted: false
+          cache_key: zh-cn-windows-v1
+          cache_on_failure: true
+          cache_workspace_crates: true
 
       - name: Check formatting
         shell: bash
@@ -41,13 +44,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check Windows application
-        run: cargo check -p warp --bin warp-oss
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Clippy
-        run: cargo clippy -p warp_localization -p warp --all-targets --tests -- -D warnings
+      - name: Check and lint Windows application
+        run: |
+          cargo clippy -p warp_localization --all-targets -- -D warnings
+          cargo clippy -p warp --lib --bin warp-oss -- -D warnings
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -68,6 +68,9 @@ jobs:
           target_os: windows
           is_self_hosted: false
           install_release_deps: true
+          cache_key: zh-cn-windows-v1
+          cache_on_failure: true
+          cache_workspace_crates: true
 
       - name: Build release executable
         run: cargo build --profile release-lto -p warp --bin warp-oss

@@ -15,6 +15,12 @@ inputs:
     description: If true, dependencies needed for building release artifacts will be installed (e.g., cargo-about for license generation).
   cache_key:
     description: If set, the cache key to use.  If unset, the cache key will be derived from the target OS.
+  cache_on_failure:
+    description: If true, partially compiled Rust artifacts are saved when a build fails.
+    default: "false"
+  cache_workspace_crates:
+    description: If true, compiled workspace crates are included in the Rust cache.
+    default: "false"
   ssh_key:
     description: SSH private key used to clone the private warp-channel-config repository. Only consumed when running in warpdotdev/warp-internal.
 
@@ -74,7 +80,9 @@ runs:
       with:
         # Make sure x86_64-unknown-linux-gnu and wasm32-unknown-unknown builds
         # don't share a cache, despite running on the same _host_ architecture.
-        key: ${{ inputs.cache_key != '' && inputs.cache_key || inputs.target_os }}
+        shared-key: ${{ inputs.cache_key != '' && inputs.cache_key || inputs.target_os }}
+        cache-on-failure: ${{ inputs.cache_on_failure }}
+        cache-workspace-crates: ${{ inputs.cache_workspace_crates }}
         # Only cache runs on the master branch (caches on feature branches
         # are not reusable).
         save-if: ${{ github.ref == 'refs/heads/master' }}

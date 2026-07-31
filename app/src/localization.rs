@@ -26,10 +26,6 @@ impl LocalizationModel {
         self.localization.preference()
     }
 
-    pub fn locale(&self) -> &unic_langid::LanguageIdentifier {
-        self.localization.locale()
-    }
-
     pub fn text(&self, id: &str, args: Option<&FluentArgs<'_>>) -> String {
         self.localization.text(id, args)
     }
