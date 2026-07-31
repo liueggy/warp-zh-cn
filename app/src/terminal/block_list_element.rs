@@ -7,6 +7,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use enum_iterator::Sequence;
+use fluent_bundle::FluentArgs;
 use itertools::Itertools;
 use parking_lot::FairMutex;
 use pathfinder_color::ColorU;
@@ -3557,15 +3558,21 @@ impl Element for BlockListElement {
 
                     let total_lines = grid_storage_lines + flat_storage_lines;
                     let total_bytes = grid_storage_bytes + flat_storage_bytes;
-                    let text = format!(
-                        "\
-                            Lines: {total_lines} (grid: {grid_storage_lines}, flat: {flat_storage_lines}); \
-                            Size: {:#.1} (grid: {:#.1}, flat: {:#.1})\
-                        ",
-                        adjusted_bytes(total_bytes),
-                        adjusted_bytes(grid_storage_bytes),
-                        adjusted_bytes(flat_storage_bytes),
+                    let mut args = FluentArgs::new();
+                    args.set("total_lines", total_lines);
+                    args.set("grid_lines", grid_storage_lines);
+                    args.set("flat_lines", flat_storage_lines);
+                    args.set("total_size", format!("{:#.1}", adjusted_bytes(total_bytes)));
+                    args.set(
+                        "grid_size",
+                        format!("{:#.1}", adjusted_bytes(grid_storage_bytes)),
                     );
+                    args.set(
+                        "flat_size",
+                        format!("{:#.1}", adjusted_bytes(flat_storage_bytes)),
+                    );
+                    let text =
+                        crate::localization::text_with_args("terminal-memory-stats", &args, app);
 
                     let mut element = Text::new_inline(text, self.ui_font_family, self.font_size)
                         .with_style(Properties::default().weight(self.font_weight))

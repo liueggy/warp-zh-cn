@@ -1378,7 +1378,8 @@ impl Workspace {
             EditorView::single_line(options, ctx)
         });
         editor.update(ctx, |editor, ctx| {
-            editor.set_placeholder_text("Search tabs...", ctx);
+            editor
+                .set_placeholder_text(crate::localization::text("workspace-search-tabs", ctx), ctx);
         });
         ctx.subscribe_to_view(&editor, |me, editor_view, event, ctx| match event {
             EditorEvent::Edited(_) => {
@@ -9802,33 +9803,39 @@ impl Workspace {
         }
 
         items.extend([
-            MenuItemFields::new("What's new")
+            MenuItemFields::new(crate::localization::text("workspace-menu-whats-new", app))
                 .with_on_select_action(WorkspaceAction::ViewLatestChangelog)
                 .into_item(),
-            MenuItemFields::new("Settings")
+            MenuItemFields::new(crate::localization::text("workspace-menu-settings", app))
                 .with_on_select_action(WorkspaceAction::ShowSettings)
                 .into_item(),
-            MenuItemFields::new("Keyboard shortcuts")
-                .with_on_select_action(WorkspaceAction::ToggleKeybindingsPage)
-                .into_item(),
+            MenuItemFields::new(crate::localization::text(
+                "workspace-menu-keyboard-shortcuts",
+                app,
+            ))
+            .with_on_select_action(WorkspaceAction::ToggleKeybindingsPage)
+            .into_item(),
             MenuItem::Separator,
-            MenuItemFields::new("Documentation")
-                .with_on_select_action(WorkspaceAction::ViewUserDocs)
-                .into_item(),
-            MenuItemFields::new("Feedback")
+            MenuItemFields::new(crate::localization::text(
+                "workspace-menu-documentation",
+                app,
+            ))
+            .with_on_select_action(WorkspaceAction::ViewUserDocs)
+            .into_item(),
+            MenuItemFields::new(crate::localization::text("workspace-menu-feedback", app))
                 .with_on_select_action(WorkspaceAction::SendFeedback)
                 .into_item(),
         ]);
 
         #[cfg(not(target_family = "wasm"))]
         items.push(
-            MenuItemFields::new("View Warp logs")
+            MenuItemFields::new(crate::localization::text("workspace-menu-view-logs", app))
                 .with_on_select_action(WorkspaceAction::ViewLogs)
                 .into_item(),
         );
 
         items.extend([
-            MenuItemFields::new("Join our Slack community")
+            MenuItemFields::new(crate::localization::text("workspace-menu-join-slack", app))
                 .with_on_select_action(WorkspaceAction::JoinSlack)
                 .into_item(),
             MenuItem::Separator,
@@ -9836,7 +9843,7 @@ impl Workspace {
 
         if self.auth_state.is_anonymous_or_logged_out() {
             items.push(
-                MenuItemFields::new("Sign up")
+                MenuItemFields::new(crate::localization::text("workspace-menu-sign-up", app))
                     .with_on_select_action(WorkspaceAction::SignupAnonymousUser)
                     .into_item(),
             );
@@ -9850,29 +9857,35 @@ impl Workspace {
 
         if is_on_paid_plan {
             items.push(
-                MenuItemFields::new("Billing and usage")
-                    .with_on_select_action(WorkspaceAction::ShowSettingsPage(
-                        SettingsSection::BillingAndUsage,
-                    ))
-                    .into_item(),
+                MenuItemFields::new(crate::localization::text(
+                    "workspace-menu-billing-usage",
+                    app,
+                ))
+                .with_on_select_action(WorkspaceAction::ShowSettingsPage(
+                    SettingsSection::BillingAndUsage,
+                ))
+                .into_item(),
             );
         } else {
             items.push(
-                MenuItemFields::new("Upgrade")
+                MenuItemFields::new(crate::localization::text("workspace-menu-upgrade", app))
                     .with_on_select_action(WorkspaceAction::ShowUpgrade)
                     .into_item(),
             );
         }
 
         items.push(
-            MenuItemFields::new("Invite a friend")
-                .with_on_select_action(WorkspaceAction::ShowReferralSettingsPage)
-                .into_item(),
+            MenuItemFields::new(crate::localization::text(
+                "workspace-menu-invite-friend",
+                app,
+            ))
+            .with_on_select_action(WorkspaceAction::ShowReferralSettingsPage)
+            .into_item(),
         );
 
         if !self.auth_state.is_anonymous_or_logged_out() {
             items.push(
-                MenuItemFields::new("Log out")
+                MenuItemFields::new(crate::localization::text("workspace-menu-log-out", app))
                     .with_on_select_action(WorkspaceAction::LogOut)
                     .into_item(),
             );
@@ -20656,7 +20669,11 @@ impl Workspace {
         Shrinkable::new(1.0, inner).finish()
     }
 
-    fn render_title_bar_search_bar(&self, appearance: &Appearance) -> Box<dyn Element> {
+    fn render_title_bar_search_bar(
+        &self,
+        appearance: &Appearance,
+        app: &AppContext,
+    ) -> Box<dyn Element> {
         let theme = appearance.theme();
         let text_color = theme.sub_text_color(theme.background());
 
@@ -20678,7 +20695,7 @@ impl Workspace {
                         Shrinkable::new(
                             1.,
                             Text::new_inline(
-                                "Search sessions, agents, files...",
+                                crate::localization::text("workspace-search-all", app),
                                 appearance.ui_font_family(),
                                 14.,
                             )
@@ -20869,7 +20886,7 @@ impl Workspace {
                     1.,
                     Clipped::new(
                         Container::new(
-                            Align::new(self.render_title_bar_search_bar(appearance)).finish(),
+                            Align::new(self.render_title_bar_search_bar(appearance, ctx)).finish(),
                         )
                         .with_padding_left(TITLE_BAR_SEARCH_BAR_SLOT_PADDING)
                         .with_padding_right(TITLE_BAR_SEARCH_BAR_SLOT_PADDING)
