@@ -135,7 +135,12 @@ fn bundle(
     let mut bundle = FluentBundle::new_concurrent(vec![locale]);
     bundle
         .add_resource(resource)
-        .map_err(|errors| errors.into_iter().map(|error| error.to_string()).collect())?;
+        .map_err(|errors| {
+            errors
+                .into_iter()
+                .map(|error| error.to_string())
+                .collect::<Vec<_>>()
+        })?;
     Ok(bundle)
 }
 
