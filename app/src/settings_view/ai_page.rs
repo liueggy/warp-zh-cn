@@ -175,15 +175,8 @@ const AI_SETTINGS_DROPDOWN_MAX_HEIGHT: f32 = 250.;
 const CONTEXT_WINDOW_SLIDER_WIDTH: f32 = 220.;
 const CONTEXT_WINDOW_INPUT_BOX_WIDTH: f32 = 120.;
 
-const NEXT_COMMAND_DESCRIPTION: &str = "Let AI suggest the next command to run based on your command history, outputs, and common workflows.";
-const PROMPT_SUGGESTIONS_DESCRIPTION: &str = "Let AI suggest natural language prompts, as inline banners in the input, based on recent commands and their outputs.";
-const SUGGESTED_CODE_BANNERS_DESCRIPTION: &str = "Let AI suggest code diffs and queries as inline banners in the blocklist, based on recent commands and their outputs.";
 const NATURAL_LANGUAGE_AUTOSUGGESTIONS: &str =
     "Let AI suggest natural language autosuggestions, based on recent commands and their outputs.";
-const SHARED_BLOCK_TITLE_GENERATION_DESCRIPTION: &str =
-    "Let AI generate a title for your shared block based on the command and output.";
-const GIT_OPERATIONS_AUTOGEN_DESCRIPTION: &str =
-    "Let AI generate commit messages and pull request titles and descriptions.";
 const WISPR_FLOW_URL: &str = "https://wisprflow.ai/";
 const CUSTOM_INFERENCE_LEARN_MORE_URL: &str =
     "https://docs.warp.dev/agent-platform/inference/custom-inference-endpoint/";
@@ -1063,7 +1056,10 @@ impl AISettingsPageView {
             };
             let mut editor = EditorView::new(options, ctx);
 
-            editor.set_placeholder_text("Commands, comma separated", ctx);
+            editor.set_placeholder_text(
+                crate::localization::text("agent-denylist-placeholder", ctx),
+                ctx,
+            );
 
             let current_value = AISettings::as_ref(ctx)
                 .autodetection_command_denylist
@@ -4929,7 +4925,7 @@ impl SettingsWidget for GlobalAIWidget {
             .with_cross_axis_alignment(CrossAxisAlignment::Center)
             .with_child(
                 Text::new_inline(
-                    "Warp Agent",
+                    crate::localization::text("agent-title", app),
                     appearance.ui_font_family(),
                     PRIMARY_HEADER_FONT_SIZE,
                 )
@@ -4963,7 +4959,7 @@ impl SettingsWidget for GlobalAIWidget {
                     .with_child(
                         Container::new(
                             Text::new_inline(
-                                "To use AI features, please create an account.",
+                                crate::localization::text("agent-account-required", app),
                                 appearance.ui_font_family(),
                                 14.,
                             )
@@ -4994,7 +4990,7 @@ impl SettingsWidget for GlobalAIWidget {
                                     }),
                                     ..Default::default()
                                 })
-                                .with_text_label("Sign up".to_owned())
+                                .with_text_label(crate::localization::text("agent-sign-up", app))
                                 .build()
                                 .on_click(move |ctx, _, _| {
                                     ctx.dispatch_typed_action(
@@ -5413,7 +5409,7 @@ impl ActiveAIWidget {
         Flex::column()
             .with_child(
                 render_ai_setting_toggle::<IntelligentAutosuggestionsEnabled>(
-                    "Next Command",
+                    crate::localization::text("agent-next-command", app),
                     AISettingsPageAction::ToggleIntelligentAutosuggestions,
                     *ai_settings.intelligent_autosuggestions_enabled_internal,
                     is_toggleable,
@@ -5423,7 +5419,7 @@ impl ActiveAIWidget {
                 ),
             )
             .with_child(render_ai_setting_description(
-                NEXT_COMMAND_DESCRIPTION,
+                crate::localization::text("agent-next-command-description", app),
                 is_toggleable,
                 app,
             ))
@@ -5440,7 +5436,7 @@ impl ActiveAIWidget {
         Flex::column()
             .with_child(
                 render_ai_setting_toggle::<AgentModeQuerySuggestionsEnabled>(
-                    "Prompt Suggestions",
+                    crate::localization::text("agent-prompt-suggestions", app),
                     AISettingsPageAction::TogglePromptSuggestions,
                     *ai_settings.prompt_suggestions_enabled_internal,
                     is_toggleable,
@@ -5450,7 +5446,7 @@ impl ActiveAIWidget {
                 ),
             )
             .with_child(render_ai_setting_description(
-                PROMPT_SUGGESTIONS_DESCRIPTION,
+                crate::localization::text("agent-prompt-suggestions-description", app),
                 is_toggleable,
                 app,
             ))
@@ -5467,7 +5463,7 @@ impl ActiveAIWidget {
         Flex::column()
             .with_child(
                 render_ai_setting_toggle::<AgentModeQuerySuggestionsEnabled>(
-                    "Suggested Code Banners",
+                    crate::localization::text("agent-code-banners", app),
                     AISettingsPageAction::ToggleCodeSuggestions,
                     *ai_settings.code_suggestions_enabled_internal,
                     is_toggleable,
@@ -5477,7 +5473,7 @@ impl ActiveAIWidget {
                 ),
             )
             .with_child(render_ai_setting_description(
-                SUGGESTED_CODE_BANNERS_DESCRIPTION,
+                crate::localization::text("agent-code-banners-description", app),
                 is_toggleable,
                 app,
             ))
@@ -5521,7 +5517,7 @@ impl ActiveAIWidget {
         Flex::column()
             .with_child(
                 render_ai_setting_toggle::<SharedBlockTitleGenerationEnabled>(
-                    "Shared Block Title Generation",
+                    crate::localization::text("agent-shared-block-title", app),
                     AISettingsPageAction::ToggleSharedTitleGeneration,
                     *ai_settings.shared_block_title_generation_enabled_internal,
                     is_toggleable,
@@ -5531,7 +5527,7 @@ impl ActiveAIWidget {
                 ),
             )
             .with_child(render_ai_setting_description(
-                SHARED_BLOCK_TITLE_GENERATION_DESCRIPTION,
+                crate::localization::text("agent-shared-block-title-description", app),
                 is_toggleable,
                 app,
             ))
@@ -5547,7 +5543,7 @@ impl ActiveAIWidget {
         let is_toggleable = ai_settings.is_active_ai_enabled(app);
         Flex::column()
             .with_child(render_ai_setting_toggle::<GitOperationsAutogenEnabled>(
-                "Commit & Pull Request Generation",
+                crate::localization::text("agent-git-generation", app),
                 AISettingsPageAction::ToggleGitOperationsAutogen,
                 *ai_settings.git_operations_autogen_enabled_internal,
                 is_toggleable,
@@ -5556,7 +5552,7 @@ impl ActiveAIWidget {
                 app,
             ))
             .with_child(render_ai_setting_description(
-                GIT_OPERATIONS_AUTOGEN_DESCRIPTION,
+                crate::localization::text("agent-git-generation-description", app),
                 is_toggleable,
                 app,
             ))
@@ -5598,7 +5594,7 @@ impl SettingsWidget for ActiveAIWidget {
                         .with_child(
                             build_sub_header(
                                 appearance,
-                                "Active AI",
+                                crate::localization::text("agent-section-active-ai", app),
                                 Some(styles::header_font_color(is_any_ai_enabled, app)),
                             )
                             .finish(),
@@ -6659,7 +6655,7 @@ impl SettingsWidget for AIInputWidget {
 
         let input_header = build_sub_header(
             appearance,
-            "Input",
+            crate::localization::text("agent-section-input", app),
             Some(styles::header_font_color(is_any_ai_enabled, app)),
         )
         .with_padding_bottom(HEADER_PADDING)
@@ -6676,7 +6672,7 @@ impl SettingsWidget for AIInputWidget {
         );
 
         let show_input_hint_text = render_ai_setting_toggle::<ShowHintText>(
-            "Show input hint text",
+            crate::localization::text("agent-show-input-hints", app),
             AISettingsPageAction::ToggleShowInputHintText,
             *InputSettings::as_ref(app).show_hint_text,
             is_any_ai_enabled,
@@ -6694,7 +6690,7 @@ impl SettingsWidget for AIInputWidget {
 
         if FeatureFlag::AgentTips.is_enabled() {
             let agent_tips_toggle = render_ai_setting_toggle::<ShowAgentTips>(
-                "Show agent tips",
+                crate::localization::text("agent-show-tips", app),
                 AISettingsPageAction::ToggleShowAgentTips,
                 *InputSettings::as_ref(app).show_agent_tips,
                 is_any_ai_enabled,
@@ -6706,7 +6702,7 @@ impl SettingsWidget for AIInputWidget {
         }
 
         widget_children.push(render_ai_setting_toggle::<IncludeAgentCommandsInHistory>(
-            "Include agent-executed commands in history",
+            crate::localization::text("agent-include-history", app),
             AISettingsPageAction::ToggleIncludeAgentCommandsInHistory,
             *ai_settings.include_agent_commands_in_history,
             is_any_ai_enabled,
@@ -6717,20 +6713,19 @@ impl SettingsWidget for AIInputWidget {
 
         widget_children.push(
             Flex::column()
-                .with_child(render_ai_setting_toggle::<
-                    AutoApproveBypassesCommandDenylist,
-                >(
-                    "Allow auto-approve to bypass command denylist",
-                    AISettingsPageAction::ToggleAutoApproveBypassesCommandDenylist,
-                    *ai_settings.auto_approve_bypasses_command_denylist,
-                    is_any_ai_enabled,
-                    self.auto_approve_bypasses_command_denylist_toggle
-                        .clone(),
-                    &view.local_only_icon_tooltip_states,
-                    app,
-                ))
+                .with_child(
+                    render_ai_setting_toggle::<AutoApproveBypassesCommandDenylist>(
+                        crate::localization::text("agent-auto-approve-denylist", app),
+                        AISettingsPageAction::ToggleAutoApproveBypassesCommandDenylist,
+                        *ai_settings.auto_approve_bypasses_command_denylist,
+                        is_any_ai_enabled,
+                        self.auto_approve_bypasses_command_denylist_toggle.clone(),
+                        &view.local_only_icon_tooltip_states,
+                        app,
+                    ),
+                )
                 .with_child(render_ai_setting_description(
-                    "When enabled, fast forward and auto-approve run denylisted commands without asking for confirmation.",
+                    crate::localization::text("agent-auto-approve-denylist-description", app),
                     is_any_ai_enabled,
                     app,
                 ))
@@ -6822,20 +6817,20 @@ impl AIInputWidget {
         let mut section = Flex::column();
 
         if FeatureFlag::AgentView.is_enabled() {
-            static AUTODETECTION_DESCRIPTION_FRAGMENTS: LazyLock<Vec<FormattedTextFragment>> =
-                LazyLock::new(|| {
-                    vec![
-                        FormattedTextFragment::plain_text("Encountered an incorrect detection? "),
-                        FormattedTextFragment::hyperlink(
-                            "Let us know",
-                            "https://warpdotdev.typeform.com/to/offrTIpq",
-                        ),
-                    ]
-                });
+            let autodetection_description_fragments = vec![
+                FormattedTextFragment::plain_text(format!(
+                    "{} ",
+                    crate::localization::text("agent-incorrect-detection", app)
+                )),
+                FormattedTextFragment::hyperlink(
+                    crate::localization::text("agent-let-us-know", app),
+                    "https://warpdotdev.typeform.com/to/offrTIpq",
+                ),
+            ];
 
             section.add_children([
                 render_ai_setting_toggle::<NLDInTerminalEnabled>(
-                    "Autodetect agent prompts in terminal input",
+                    crate::localization::text("agent-autodetect-prompts", app),
                     AISettingsPageAction::ToggleNLDInTerminal,
                     ai_settings.is_nld_in_terminal_enabled(app),
                     is_toggleable,
@@ -6844,7 +6839,7 @@ impl AIInputWidget {
                     app,
                 ),
                 render_ai_setting_toggle::<AIAutoDetectionEnabled>(
-                    "Autodetect terminal commands in agent input",
+                    crate::localization::text("agent-autodetect-commands", app),
                     AISettingsPageAction::ToggleAIInputAutoDetection,
                     is_nld_enabled,
                     is_toggleable,
@@ -6855,7 +6850,7 @@ impl AIInputWidget {
                 Container::new(
                     FormattedTextElement::new(
                         FormattedText::new([FormattedTextLine::Line(
-                            (*AUTODETECTION_DESCRIPTION_FRAGMENTS).clone(),
+                            autodetection_description_fragments,
                         )]),
                         CONTENT_FONT_SIZE,
                         appearance.ui_font_family(),
@@ -6928,13 +6923,13 @@ impl AIInputWidget {
 
         section
             .with_child(render_ai_setting_label::<AICommandDenylist>(
-                "Natural language denylist".to_owned(),
+                crate::localization::text("agent-natural-language-denylist", app),
                 is_toggleable,
                 &view.local_only_icon_tooltip_states,
                 app,
             ))
             .with_child(render_ai_setting_description(
-                "Commands listed here will never trigger natural language detection.",
+                crate::localization::text("agent-natural-language-denylist-description", app),
                 is_toggleable,
                 app,
             ))

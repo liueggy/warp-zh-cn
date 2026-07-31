@@ -101,12 +101,14 @@ pub struct SettingsFooterMouseStates {
 pub fn render_open_settings_file_button(
     appearance: &Appearance,
     mouse_state: MouseStateHandle,
+    app: &AppContext,
 ) -> Box<dyn Element> {
     let theme = appearance.theme();
     let text_fill = theme.nonactive_ui_text_color();
     let text_color = text_fill.into_solid();
     let border_color = theme.outline().into_solid();
     let ui_font_family = appearance.ui_font_family();
+    let label_text = crate::localization::text("settings-open-file", app);
 
     Hoverable::new(mouse_state, move |state| {
         let icon = ConstrainedBox::new(Icon::Code2.to_warpui_icon(text_fill).finish())
@@ -114,7 +116,7 @@ pub fn render_open_settings_file_button(
             .with_height(FOOTER_ICON_SIZE)
             .finish();
 
-        let label = Text::new_inline("Open settings file", ui_font_family, FOOTER_FONT_SIZE)
+        let label = Text::new_inline(label_text.clone(), ui_font_family, FOOTER_FONT_SIZE)
             .with_color(text_color)
             .with_style(Properties {
                 weight: Weight::Semibold,
@@ -298,6 +300,7 @@ pub fn render_footer(
         SettingsFooterKind::OpenButton => render_open_settings_file_button(
             appearance,
             mouse_states.open_settings_file_button.clone(),
+            app,
         ),
         SettingsFooterKind::ErrorAlert => match error {
             Some(error) => {
@@ -309,6 +312,7 @@ pub fn render_footer(
             None => render_open_settings_file_button(
                 appearance,
                 mouse_states.open_settings_file_button.clone(),
+                app,
             ),
         },
     };
