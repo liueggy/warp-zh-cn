@@ -9,6 +9,6 @@ fluent-bundle.workspace = true
 fluent-syntax.workspace = true
 schemars.workspace = true
 serde.workspace = true
-settings_value.workspace = true
+settings_value = { workspace = true, features = ["derive"] }
 sys-locale.workspace = true
 unic-langid.workspace = true

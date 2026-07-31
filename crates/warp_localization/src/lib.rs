@@ -127,7 +127,12 @@ fn bundle(
     source: &str,
 ) -> Result<FluentBundle<FluentResource>, Vec<String>> {
     let resource = FluentResource::try_new(source.to_owned())
-        .map_err(|(_, errors)| errors.into_iter().map(|error| error.to_string()).collect())?;
+        .map_err(|(_, errors)| {
+            errors
+                .into_iter()
+                .map(|error| error.to_string())
+                .collect::<Vec<_>>()
+        })?;
     let mut bundle = FluentBundle::new_concurrent(vec![locale]);
     bundle
         .add_resource(resource)
@@ -148,7 +153,12 @@ fn format_message(
 
 fn message_ids(source: &str) -> Result<HashSet<String>, Vec<String>> {
     let resource = fluent_syntax::parser::parse(source)
-        .map_err(|(_, errors)| errors.into_iter().map(|error| error.to_string()).collect())?;
+        .map_err(|(_, errors)| {
+            errors
+                .into_iter()
+                .map(|error| error.to_string())
+                .collect::<Vec<_>>()
+        })?;
     Ok(resource
         .body
         .into_iter()
