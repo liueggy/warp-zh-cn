@@ -311,6 +311,35 @@ impl Display for SettingsSection {
 }
 
 impl SettingsSection {
+    pub fn localized_label(&self, app: &AppContext) -> String {
+        let key = match self {
+            Self::About => "settings-section-about",
+            Self::Account => "settings-section-account",
+            Self::MCPServers => "settings-section-mcp-servers",
+            Self::BillingAndUsage => "settings-section-billing-usage",
+            Self::Appearance => "settings-section-appearance",
+            Self::Features => "settings-section-features",
+            Self::Keybindings => "settings-section-keybindings",
+            Self::Privacy => "settings-section-privacy",
+            Self::Referrals => "settings-section-referrals",
+            Self::Scripting => "settings-section-scripting",
+            Self::SharedBlocks => "settings-section-shared-blocks",
+            Self::Teams => "settings-section-teams",
+            Self::WarpDrive => "settings-section-warp-drive",
+            Self::Warpify => "settings-section-warpify",
+            Self::AI | Self::WarpAgent => "settings-section-warp-agent",
+            Self::AgentProfiles => "settings-section-agent-profiles",
+            Self::AgentMCPServers => "settings-section-agent-mcp-servers",
+            Self::Knowledge => "settings-section-knowledge",
+            Self::ThirdPartyCLIAgents => "settings-section-third-party-cli-agents",
+            Self::Code | Self::CodeIndexing => "settings-section-code-indexing",
+            Self::EditorAndCodeReview => "settings-section-editor-code-review",
+            Self::CloudEnvironments => "settings-section-cloud-environments",
+            Self::OzCloudAPIKeys => "settings-section-cloud-api-keys",
+        };
+        crate::localization::text(key, app)
+    }
+
     /// Returns true if this section is a subpage under any umbrella.
     pub fn is_subpage(&self) -> bool {
         self.is_ai_subpage() || self.is_code_subpage() || self.is_cloud_platform_subpage()
@@ -1150,7 +1179,8 @@ pub struct SettingsView {
 
 impl SettingsView {
     pub fn new(page: Option<SettingsSection>, ctx: &mut ViewContext<Self>) -> Self {
-        let pane_configuration = ctx.add_model(|_ctx| PaneConfiguration::new("Settings"));
+        let title = crate::localization::text("settings-title", ctx);
+        let pane_configuration = ctx.add_model(move |_ctx| PaneConfiguration::new(title));
 
         let global_resource_handles = GlobalResourceHandlesProvider::as_ref(ctx).get().clone();
         // Main settings page with accounts info
@@ -1289,7 +1319,7 @@ impl SettingsView {
                 ..Default::default()
             };
             let mut editor = EditorView::single_line(options, ctx);
-            editor.set_placeholder_text("Search", ctx);
+            editor.set_placeholder_text(crate::localization::text("settings-search", ctx), ctx);
             editor
         });
 
@@ -1336,19 +1366,19 @@ impl SettingsView {
         let mut nav_items = vec![
             SettingsNavItem::Page(SettingsSection::Account),
             SettingsNavItem::Umbrella(SettingsUmbrella::new(
-                "Agents",
+                "settings-group-agents",
                 SettingsSection::ai_subpages().to_vec(),
             )),
             SettingsNavItem::Page(SettingsSection::BillingAndUsage),
             SettingsNavItem::Umbrella(SettingsUmbrella::new(
-                "Code",
+                "settings-group-code",
                 vec![
                     SettingsSection::CodeIndexing,
                     SettingsSection::EditorAndCodeReview,
                 ],
             )),
             SettingsNavItem::Umbrella(SettingsUmbrella::new(
-                "Cloud platform",
+                "settings-group-cloud-platform",
                 vec![
                     SettingsSection::CloudEnvironments,
                     SettingsSection::OzCloudAPIKeys,
@@ -2438,15 +2468,19 @@ impl SettingsView {
         .finish()
     }
 
-    fn render_search_zero_state(&self, appearance: &Appearance) -> Box<dyn Element> {
+    fn render_search_zero_state(
+        &self,
+        appearance: &Appearance,
+        app: &AppContext,
+    ) -> Box<dyn Element> {
         let theme = appearance.theme();
         Container::new(
             Align::new(
                 Flex::column()
-                .with_cross_axis_alignment(CrossAxisAlignment::Center)
+                    .with_cross_axis_alignment(CrossAxisAlignment::Center)
                     .with_children([
                         Text::new(
-                            "No settings match your search.",
+                            crate::localization::text("settings-no-results", app),
                             appearance.ui_font_family(),
                             appearance.ui_font_size(),
                         )
@@ -2454,7 +2488,7 @@ impl SettingsView {
                         .with_color(theme.sub_text_color(theme.background()).into_solid())
                         .finish(),
                         Text::new(
-                            "You may want to try using different keywords or checking for any possible typos.",
+                            crate::localization::text("settings-no-results-hint", app),
                             appearance.ui_font_family(),
                             appearance.ui_font_size(),
                         )
@@ -2465,7 +2499,7 @@ impl SettingsView {
             )
             .finish(),
         )
-            .with_uniform_margin(16.)
+        .with_uniform_margin(16.)
         .with_corner_radius(CornerRadius::with_all(Radius::Pixels(4.)))
         .with_background(internal_colors::fg_overlay_1(appearance.theme()))
         .finish()
@@ -2489,7 +2523,7 @@ impl View for SettingsView {
         // (e.g. Oz -> AI, AgentMCPServers -> MCPServers).
         let content_page_section = self.current_settings_page.parent_page_section();
         let (page, current_page_handle) = if settings_pages.is_empty() {
-            (self.render_search_zero_state(appearance), None)
+            (self.render_search_zero_state(appearance, app), None)
         } else {
             match settings_pages
                 .iter()
@@ -2517,7 +2551,7 @@ impl View for SettingsView {
                     {
                         let page_active = section == self.current_settings_page;
                         buttons.add_child(
-                            page.render_page_button(appearance, *match_data, page_active)
+                            page.render_page_button(appearance, app, *match_data, page_active)
                                 .on_click(move |ctx, _, _| {
                                     ctx.dispatch_typed_action(SettingsAction::SelectAndRefresh(
                                         section,
@@ -2550,7 +2584,7 @@ impl View for SettingsView {
                     // across the full clickable area, not just the text.
                     buttons.add_child(
                         umbrella
-                            .render_umbrella_row(appearance)
+                            .render_umbrella_row(appearance, app)
                             .on_click(move |ctx, _, _| {
                                 ctx.dispatch_typed_action(SettingsAction::ToggleUmbrella(
                                     nav_index,
@@ -2581,9 +2615,9 @@ impl View for SettingsView {
                             }
 
                             let is_active = subpage_section == self.current_settings_page;
-                            if let Some(hoverable) = umbrella
-                                .render_subpage_button(sub_idx, appearance, match_data, is_active)
-                            {
+                            if let Some(hoverable) = umbrella.render_subpage_button(
+                                sub_idx, appearance, app, match_data, is_active,
+                            ) {
                                 buttons.add_child(
                                     hoverable
                                         .on_click(move |ctx, _, _| {
@@ -2879,9 +2913,9 @@ impl BackingView for SettingsView {
     fn render_header_content(
         &self,
         _ctx: &view::HeaderRenderContext<'_>,
-        _app: &AppContext,
+        app: &AppContext,
     ) -> view::HeaderContent {
-        view::HeaderContent::simple("Settings")
+        view::HeaderContent::simple(crate::localization::text("settings-title", app))
     }
 
     fn set_focus_handle(&mut self, focus_handle: PaneFocusHandle, _ctx: &mut ViewContext<Self>) {

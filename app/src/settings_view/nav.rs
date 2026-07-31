@@ -1,4 +1,5 @@
 use pathfinder_geometry::vector::vec2f;
+use warpui::AppContext;
 use warpui::elements::{Hoverable, MainAxisAlignment, MainAxisSize, MouseStateHandle};
 use warpui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
 use warpui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
@@ -53,7 +54,7 @@ impl SettingsUmbrella {
     /// Returns a `Hoverable` so the entire row shares a single hover/click
     /// target — i.e. the hover styling and pointing-hand cursor apply to the
     /// whole clickable area rather than just the text.
-    pub fn render_umbrella_row(&self, appearance: &Appearance) -> Hoverable {
+    pub fn render_umbrella_row(&self, appearance: &Appearance, app: &AppContext) -> Hoverable {
         let chevron_icon = if self.expanded {
             Icon::ChevronUp
         } else {
@@ -73,7 +74,7 @@ impl SettingsUmbrella {
             .button(ButtonVariant::Text, self.button_state_handle.clone())
             .with_text_and_icon_label(TextAndIcon::new(
                 TextAndIconAlignment::TextFirst,
-                self.label.to_string(),
+                crate::localization::text(self.label, app),
                 chevron_icon.to_warpui_icon(text_color),
                 MainAxisSize::Max,
                 MainAxisAlignment::SpaceBetween,
@@ -93,13 +94,14 @@ impl SettingsUmbrella {
         &self,
         index: usize,
         appearance: &Appearance,
+        app: &AppContext,
         match_data: MatchData,
         is_active: bool,
     ) -> Option<Hoverable> {
         let section = self.subpages.get(index)?;
         let mouse_state = self.subpage_button_states.get(index)?.clone();
 
-        let label = section.to_string() + &match_data.to_string();
+        let label = section.localized_label(app) + &match_data.to_string();
 
         let hoverable = appearance
             .ui_builder()

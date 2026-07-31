@@ -170,6 +170,7 @@ impl SettingsPage {
     pub fn render_page_button(
         &self,
         appearance: &Appearance,
+        app: &AppContext,
         match_data: MatchData,
         clicked: bool,
     ) -> Hoverable {
@@ -183,7 +184,7 @@ impl SettingsPage {
                 },
                 self.button_state_handle.clone(),
             )
-            .with_text_label(self.section.to_string() + &match_data.to_string())
+            .with_text_label(self.section.localized_label(app) + &match_data.to_string())
             .with_style(
                 UiComponentStyles::default()
                     .set_border_width(0.)
