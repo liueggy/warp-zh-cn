@@ -133,6 +133,7 @@ fn bundle(
             .collect::<Vec<_>>()
     })?;
     let mut bundle = FluentBundle::new_concurrent(vec![locale]);
+    bundle.set_use_isolating(false);
     bundle.add_resource(resource).map_err(|errors| {
         errors
             .into_iter()
