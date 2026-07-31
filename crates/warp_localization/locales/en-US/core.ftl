@@ -1,0 +1,15 @@
+language-system = System default
+language-en-us = English
+language-zh-cn = Simplified Chinese
+language-setting-title = Language
+language-setting-description = Choose the language used by Warp.
+command-use-system-language = Follow system language
+command-use-english = Switch to English
+command-use-simplified-chinese = Switch to Simplified Chinese
+welcome-user = Welcome to { $name }
+settings-file-error-heading = Your settings file contains an error.
+settings-file-errors-heading = Your settings file contains errors.
+settings-file-parse-description = The file could not be parsed because its syntax is invalid. Open the file to fix it.
+settings-file-invalid-description = The value for “{ $key }” is invalid. The default value is being used.
+settings-file-invalid-many-description = The values for { $keys } are invalid. Default values are being used.
+settings-file-fix-with-agent = Fix with Oz

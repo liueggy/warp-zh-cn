@@ -1,0 +1,15 @@
+language-system = 跟随系统
+language-en-us = English
+language-zh-cn = 简体中文
+language-setting-title = 语言
+language-setting-description = 选择 Warp 使用的界面语言。
+command-use-system-language = 跟随系统语言
+command-use-english = 切换到 English
+command-use-simplified-chinese = 切换到简体中文
+welcome-user = 欢迎使用 { $name }
+settings-file-error-heading = 设置文件包含一个错误。
+settings-file-errors-heading = 设置文件包含多个错误。
+settings-file-parse-description = 文件语法无效，无法解析。请打开文件进行修复。
+settings-file-invalid-description = “{ $key }”的值无效，当前使用默认值。
+settings-file-invalid-many-description = { $keys } 的值无效，当前使用默认值。
+settings-file-fix-with-agent = 使用 Oz 修复

@@ -1,0 +1,14 @@
+[package]
+name = "warp_localization"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+fluent-bundle.workspace = true
+fluent-syntax.workspace = true
+schemars.workspace = true
+serde.workspace = true
+settings_value.workspace = true
+sys-locale.workspace = true
+unic-langid.workspace = true

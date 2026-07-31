@@ -1,0 +1,83 @@
+name: Windows zh-CN build
+
+on:
+  push:
+    branches:
+      - master
+      - codex/zh-cn
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zh-cn-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-localization:
+    name: Validate localization
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          lfs: true
+
+      - name: Prepare Windows build environment
+        uses: ./.github/actions/prepare_environment
+        with:
+          target_os: windows
+          is_self_hosted: false
+
+      - name: Check formatting
+        shell: bash
+        run: ./script/format --check
+
+      - name: Test localization catalogs
+        run: cargo test -p warp_localization
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Windows application
+        run: cargo check -p warp --bin warp-oss
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Clippy
+        run: cargo clippy -p warp_localization -p warp --all-targets --tests -- -D warnings
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows:
+    name: Build Windows application
+    runs-on: windows-latest
+    needs: validate-localization
+    timeout-minutes: 120
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          lfs: true
+
+      - name: Prepare Windows release environment
+        uses: ./.github/actions/prepare_environment
+        with:
+          target_os: windows
+          is_self_hosted: false
+          install_release_deps: true
+
+      - name: Build release executable
+        run: cargo build --profile release-lto -p warp --bin warp-oss
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@ea165f8d65b6e75b5404495a51f5c1718c771f6c # v4.6.2
+        with:
+          name: warp-zh-cn-windows
+          path: target/release-lto/warp-oss.exe
+          if-no-files-found: error
+          retention-days: 14
