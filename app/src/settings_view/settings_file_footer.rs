@@ -10,6 +10,7 @@
 use pathfinder_color::ColorU;
 use warp_core::ui::color::coloru_with_opacity;
 use warp_core::ui::theme::Fill;
+use warpui::AppContext;
 use warpui::elements::{
     Border, Clipped, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox, Container,
     CornerRadius, CrossAxisAlignment, Element, Empty, Expanded, Flex, Highlight, Hoverable,
@@ -18,7 +19,6 @@ use warpui::elements::{
 };
 use warpui::fonts::{FamilyId, Properties, Weight};
 use warpui::platform::Cursor;
-use warpui::AppContext;
 
 use crate::WorkspaceAction;
 use crate::appearance::Appearance;
@@ -302,7 +302,7 @@ pub fn render_footer(
         SettingsFooterKind::ErrorAlert => match error {
             Some(error) => {
                 render_settings_error_alert(appearance, error, ai_enabled, mouse_states, app)
-            },
+            }
             // Defensive fallback: if the error disappears between `choose` and
             // `render_footer`, fall back to the plain button rather than
             // rendering an empty alert shell.
